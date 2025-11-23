@@ -3,7 +3,7 @@ from selenium.webdriver.common.by import By
 
 class MainPageLocators:
     # Кнопка входа в личный кабинет
-    BUTTON_ACCOUNT = (By.XPATH, ".//a[@href='/account']")
+    BUTTON_PROFILE_ACCOUNT = (By.XPATH, ".//a[@href='/account']")
     # Кнопка перехода на раздел с конструктором
     CONSTRUCTOR_BUTTON = (By.XPATH, './/a[@href="/"]/p')
     FEED_BUTTON = (By.XPATH, './/a[@href="/feed"]/p')
@@ -34,14 +34,14 @@ class MainPageLocators:
     # Модальное окно попапа на главной (общее для всех попапов)
     MODAL_OPENED = (By.XPATH, "//section[contains(@class, 'Modal_modal_opened')]")
     # Локатор для Оверлея
-    MODAL_OVERLAY_WHEN_ORDER_PROCESS = (By.XPATH, '//img[@alt="loading animation"]/following-sibling::div[contains(@class, "Modal_modal_overlay_")]')
+    MODAL_OVERLAY_WHEN_ORDER_PROCESS = (By.CSS_SELECTOR, "div.Modal_modal_overlay__")
 
 
 class LoginPageLocators:
-        # Кнопка восстановить пароль
-        FORGOT_PASSWORD_BUTTON = (By.CSS_SELECTOR, 'a[href="/forgot-password"]')
-        # Кнопка входа в аккаунт на странице login
-        SUBMIT_BUTTON_LOGIN_TO_ACCOUNT = (By.XPATH, ".//button[text() = 'Войти']")
+    # Кнопка восстановить пароль
+    FORGOT_PASSWORD_BUTTON = (By.CSS_SELECTOR, 'a[href="/forgot-password"]')
+    # Кнопка входа в аккаунт на странице login
+    SUBMIT_BUTTON_LOGIN_TO_ACCOUNT = (By.XPATH, ".//button[text() = 'Войти']")
 
 
 class ForgotPasswordPageLocators:
@@ -82,7 +82,7 @@ class OrderFeedPageLocators:
 
 class ProfilePageLocators:
     # Текст на странице профиля
-    ACCOUNT_TEXT_IN_PROFILE = (By.XPATH, ".//p[contains(@class, 'Account_text')]")
+    ACCOUNT_TEXT_IN_PROFILE = (By.XPATH, "//p[contains(text(), 'В этом разделе вы можете изменить свои персональные данные')]")
     # Кнопка истории заказов
     HISTORY_ORDER_BUTTON_IN_PROFILE = (By.CSS_SELECTOR, 'a[href="/account/order-history"]')
     # Кнопка выхода из профиля
