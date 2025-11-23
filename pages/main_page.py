@@ -91,10 +91,15 @@ class MainPage(BasePage):
     def add_bun_to_order(self):
         self.wait_invisibility_of_element(self.locators.MODAL_OVERLAY_WHEN_ORDER_PROCESS)
         self.wait_visibility_of_element(self.locators.INGREDIENT_IN_CONSTRUCTOR)
+        initial_count = self.get_text_element(self.locators.BUN_COUNTER) or "0"
+        print(f"Начальное значение счётчика: {initial_count}")
         self.click_on_element(self.locators.INGREDIENT_IN_CONSTRUCTOR)
-
         WebDriverWait(self.driver, Config.DEFAULT_TIMEOUT).until(
-            lambda d: self.get_text_element(self.locators.BUN_COUNTER) == "2")
+            lambda d: self.get_text_element(self.locators.BUN_COUNTER) not in ("", initial_count)
+        )
+        WebDriverWait(self.driver, Config.DEFAULT_TIMEOUT).until(
+            lambda d: self.get_text_element(self.locators.BUN_COUNTER) == "2"
+        )
 
 
     @allure.step("Закрытие модального окна заказа")
