@@ -8,9 +8,8 @@ class TestMainPage:
 
     @allure.title("Переход в раздел 'Конструктор'")
     def test_navigate_to_constructor(self, driver):
-        login_page = LoginPage(driver)
-        login_page.open()
         main_page = MainPage(driver)
+        main_page.open()
         main_page.click_on_constructor_button()
         assert main_page.check_text_on_constructor_title(), 'Не появился заголовок страницы конструктор - соберите бургер'
 

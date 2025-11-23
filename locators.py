@@ -34,7 +34,7 @@ class MainPageLocators:
     # Модальное окно попапа на главной (общее для всех попапов)
     MODAL_OPENED = (By.XPATH, "//section[contains(@class, 'Modal_modal_opened')]")
     # Локатор для Оверлея
-    MODAL_OVERLAY_WHEN_ORDER_PROCESS = (By.CSS_SELECTOR, "div.Modal_modal_overlay__")
+    MODAL_OVERLAY_WHEN_ORDER_PROCESS = (By.CSS_SELECTOR, "div[class^='Modal_modal_overlay__']")
 
 
 class LoginPageLocators:

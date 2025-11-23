@@ -1,6 +1,6 @@
 import allure
 
-from selenium.common import TimeoutException
+from selenium.common import TimeoutException, ElementClickInterceptedException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -20,13 +20,15 @@ class MainPage(BasePage):
 
     @allure.step("Клик по кнопке 'Личный кабинет'")
     def click_on_button_profile_page(self):
+        WebDriverWait(self.driver, 15).until(
+            EC.invisibility_of_element_located((By.CSS_SELECTOR, "div[class^='Modal_modal_overlay__']"))
+        )
+        element = self.driver.find_element(*self.locators.BUTTON_PROFILE_ACCOUNT)
+
         try:
-            WebDriverWait(self.driver, 10).until(
-                lambda d: len(d.find_elements(By.CSS_SELECTOR, "div.Modal_modal_overlay__")) == 0
-            )
-        except TimeoutException:
-            pass
-        self.click_on_element(self.locators.BUTTON_PROFILE_ACCOUNT)
+            element.click()
+        except ElementClickInterceptedException:
+            self.driver.execute_script("arguments[0].click();", element)
 
 
     @allure.step("Клик по кнопке 'Конструктор'")

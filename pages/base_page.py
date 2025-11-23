@@ -2,7 +2,6 @@ import allure
 
 from selenium.common import TimeoutException
 from selenium.webdriver.common.by import By
-
 from config import Config
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -38,7 +37,7 @@ class BasePage:
 
 
     @allure.step('Ожидание исчезновения элемента')
-    def wait_invisibility_of_element(self, locator, timeout=Config.DEFAULT_TIMEOUT):
+    def wait_invisibility_of_element(self, locator, timeout=10):
         WebDriverWait(self.driver, timeout).until(
             EC.invisibility_of_element_located(locator)
         )
