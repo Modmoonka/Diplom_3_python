@@ -67,7 +67,7 @@ class TestOrderFeedPage:
         main_page.click_on_button_profile_page()
         profile_page = ProfilePage(driver)
         profile_page.click_on_history_order_button()
-        history_order_number = profile_page.get_last_order_number_in_history_user()
+        history_order_number = profile_page.get_latest_order_number()
 
         # Переходим в ленту
         main_page.click_on_feed_order_button()
