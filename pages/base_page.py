@@ -18,7 +18,7 @@ class BasePage:
     def open(self):
         self.driver.get(self.url)
         try:
-            WebDriverWait(self.driver, 3).until(
+            WebDriverWait(self.driver, Config.DEFAULT_TIMEOUT).until(
                 EC.invisibility_of_element_located((By.CSS_SELECTOR, "div.Modal_modal_overlay__"))
             )
         except TimeoutException:
@@ -37,14 +37,14 @@ class BasePage:
 
 
     @allure.step('Ожидание исчезновения элемента')
-    def wait_invisibility_of_element(self, locator, timeout=10):
+    def wait_invisibility_of_element(self, locator, timeout=Config.DEFAULT_TIMEOUT):
         WebDriverWait(self.driver, timeout).until(
             EC.invisibility_of_element_located(locator)
         )
 
     @allure.step('Клик по элементу')
     def click_on_element(self, locator):
-        WebDriverWait(self.driver, 20).until(EC.element_to_be_clickable(locator))
+        WebDriverWait(self.driver, Config.DEFAULT_TIMEOUT).until(EC.element_to_be_clickable(locator))
         self.driver.find_element(*locator).click()
 
 
@@ -77,7 +77,7 @@ class BasePage:
 
 
     @allure.step('Ожидание исчезновения элемента из дерева')
-    def is_element_disappeared(self, locator, timeout=3):
+    def is_element_disappeared(self, locator, timeout=Config.DEFAULT_TIMEOUT):
         try:
             WebDriverWait(self.driver, timeout).until_not(
                 EC.presence_of_element_located(locator)

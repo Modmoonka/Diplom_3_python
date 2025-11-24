@@ -20,7 +20,7 @@ class MainPage(BasePage):
 
     @allure.step("Клик по кнопке 'Личный кабинет'")
     def click_on_button_profile_page(self):
-        WebDriverWait(self.driver, 15).until(
+        WebDriverWait(self.driver, Config.DEFAULT_TIMEOUT).until(
             EC.invisibility_of_element_located((By.CSS_SELECTOR, "div[class^='Modal_modal_overlay__']"))
         )
         element = self.driver.find_element(*self.locators.BUTTON_PROFILE_ACCOUNT)

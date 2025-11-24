@@ -8,6 +8,7 @@ from pages.account_page import ProfilePage
 from config import Config
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from config import Config
 
 
 class TestLoginPage:
@@ -27,16 +28,16 @@ class TestLoginPage:
 
         OVERLAY = (By.CSS_SELECTOR, "div.Modal_modal_overlay__")
         try:
-            WebDriverWait(driver, 5).until_not(
+            WebDriverWait(driver, Config.DEFAULT_TIMEOUT).until_not(
                 EC.presence_of_element_located(OVERLAY)
             )
         except TimeoutException:
             pass
 
-        WebDriverWait(driver, 10).until(
+        WebDriverWait(driver, Config.DEFAULT_TIMEOUT).until(
             EC.visibility_of_element_located((By.XPATH, "//input[@name='name']"))
         )
 
-        WebDriverWait(driver, 5).until(
+        WebDriverWait(driver, Config.DEFAULT_TIMEOUT).until(
             EC.visibility_of_element_located(LoginPageLocators.SUBMIT_BUTTON_LOGIN_TO_ACCOUNT)
         )

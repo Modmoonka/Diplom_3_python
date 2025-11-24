@@ -33,7 +33,7 @@ class LoginPage(BasePage):
     @allure.step("Клик по кнопке 'Восстановить пароль'")
     def click_on_forgot_password(self):
         try:
-            WebDriverWait(self.driver, 10).until(
+            WebDriverWait(self.driver, Config.DEFAULT_TIMEOUT).until(
                 lambda d: len(d.find_elements(By.CSS_SELECTOR, "div.Modal_modal_overlay__")) == 0
             )
         except TimeoutException:
