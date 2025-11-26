@@ -24,4 +24,3 @@ class DriverFactory:
 
         else:
             raise ValueError(f"Unsupported browser: {browser_name}. Use 'chrome' or 'firefox'.")
-

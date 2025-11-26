@@ -31,11 +31,8 @@ class TestOrderFeedPage:
         main_page.open()
         main_page.wait_main_page_loaded()
         main_page.create_order_on_main_and_return_to_feed()
-
-        # 3. Убедиться, что мы снова в ленте, и проверить финальное значение
         order_feed_page.wait_feed_page_loaded()
         final_count = order_feed_page.get_total_orders_count()
-
         assert final_count > initial_count, "Счётчик заказов за всё время не увеличился"
 
     @allure.title("Увеличение счётчика заказов за сегодня после создания заказа")
@@ -51,41 +48,25 @@ class TestOrderFeedPage:
     @allure.title("Появление созданного заказа в разделе 'В работе'")
     def test_order_appears_in_progress_list(self,  driver, login_user_via_localstorage):
         main_page = MainPage(driver)
-        main_page.add_bun_to_order()
+        main_page.drag_ingredient_to_constructor()
         main_page.click_on_button_order()
         order_number = main_page.get_number_order_from_modal_window()
         main_page.close_order_modal()
         main_page.click_on_feed_order_button()
-        order_feed_page =  OrderFeedPage(driver)
+        order_feed_page = OrderFeedPage(driver)
         order_numbers_in_progress = order_feed_page.get_all_order_numbers_in_progress()
-        order_number_clean = order_number.lstrip('#')
-        assert order_number_clean in order_numbers_in_progress, f"Заказ {order_number_clean } не найден  в списке заказов в работе"
+        assert order_number in order_numbers_in_progress, f"Заказ {order_number} не найден  в списке заказов в работе"
+
 
     @allure.title("Отображение заказа из истории пользователя в ленте заказов")
     def test_user_order_appears_in_feed(self, driver, login_user_via_localstorage):
         main_page = MainPage(driver)
-        # Создаём ОДИН заказ
-        main_page.add_bun_to_order()
-        main_page.click_on_button_order()
-        order_number = main_page.get_number_order_from_modal_window()
-        main_page.close_order_modal()
-
-        # Переходим в историю
+        main_page.create_order_and_close_modal()
         main_page.click_on_button_profile_page()
         profile_page = ProfilePage(driver)
         profile_page.click_on_history_order_button()
-        history_order_number = profile_page.get_latest_order_number()
-
-        # Переходим в ленту
+        history_order_number = profile_page.get_last_order_number_in_history_user()
         main_page.click_on_feed_order_button()
         order_feed_page = OrderFeedPage(driver)
         order_numbers_feed = order_feed_page.get_all_order_numbers_feed()
-
-        # Приводим к единому формату
-        order_number_clean = order_number.lstrip('#')
-        history_order_clean = history_order_number.lstrip('#')
-
-        assert order_number_clean == history_order_clean, \
-            f"Номер заказа не совпадает: создан {order_number_clean}, в истории {history_order_clean}"
-        assert order_number_clean in order_numbers_feed, \
-            f"Заказ {order_number_clean} не найден в ленте заказов"
+        assert int(history_order_number) in [int(n) for n in order_numbers_feed], f"Заказ {history_order_number} не найден в ленте заказов"

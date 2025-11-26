@@ -97,12 +97,13 @@ class MainPage(BasePage):
 
     @allure.step("Закрытие модального окна заказа")
     def close_order_modal(self):
-        self.is_modal_closed(OrderFeedPageLocators.MODAL_OPENED)
+        self.click_on_element(self.locators.CLOSE_ORDER_MODAL)
+        self.wait_modal_closed(OrderFeedPageLocators.MODAL_OPENED)
 
 
     @allure.step("Создание заказа и закрытие модального окна")
     def create_order_and_close_modal(self):
-        self.add_bun_to_order()
+        self.drag_ingredient_to_constructor()
         self.click_on_button_order()
         self.close_order_modal()
 

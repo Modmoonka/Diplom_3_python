@@ -47,5 +47,4 @@ class TestPasswordRecovery:
             forgot_password_page.click_icon_show_password()
 
         with allure.step("Проверить, что поле пароля находится в активном состоянии (подсвечено)"):
-            assert  forgot_password_page.is_password_input_active(), \
-                "Поле пароля не подсвечено после клика по иконке видимости"
+            assert  forgot_password_page.is_password_input_active(),"Поле пароля не подсвечено после клика по иконке видимости"

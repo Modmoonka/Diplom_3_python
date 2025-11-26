@@ -10,7 +10,7 @@ class MainPageLocators:
     # Заголовок формы конструктора "соберите бургер"
     CONSTRUCTOR_TITLE = (By.XPATH, ".//h1[text()='Соберите бургер']")
     # Локатор для булочки в конструкторе
-    INGREDIENT_IN_CONSTRUCTOR = (By.XPATH, "//p[text()='Краторная булка N-200i']/ancestor::a")
+    INGREDIENT_IN_CONSTRUCTOR = (By.XPATH, '//a[@href="/ingredient/61c0c5a71d1f82001bdaaa6c"]')
     # Каунтер
     BUN_COUNTER = (By.XPATH, "//p[contains(text(), 'Краторная булка N-200i')]/preceding-sibling::div[contains(@class, 'counter_')]/p")
     # Подпись с составом (белки, жиры...) в попапе булочки

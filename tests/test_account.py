@@ -13,8 +13,7 @@ class TestProfilePage:
         profile_page = ProfilePage(driver)
         profile_page.wait_profile_page_loaded()
         expected_text = "В этом разделе вы можете изменить свои персональные данные"
-        assert profile_page.is_profile_info_text_correct(expected_text), \
-            'Не удалось перейти в личный кабинет'
+        assert profile_page.is_profile_info_text_correct(expected_text),'Не удалось перейти в личный кабинет'
 
     @allure.title("Переход в раздел 'История заказов' авторизованного пользователя")
     def test_navigate_to_history_order_profile(self, driver, login_user_via_localstorage):
