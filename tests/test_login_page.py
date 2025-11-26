@@ -1,43 +1,30 @@
 import allure
-
-from selenium.common import TimeoutException
-from selenium.webdriver.common.by import By
-from locators import LoginPageLocators
+from pages.login_page import LoginPage
 from pages.main_page import MainPage
 from pages.account_page import ProfilePage
-from config import Config
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from config import Config
 
 
 class TestLoginPage:
 
-    @allure.title("Выход из аккаунта")
+    @allure.title("Пользователь может выйти из аккаунта и оказаться на странице логина")
+    @allure.story("Разлогиниться через профиль")
     def test_logout_user(self, driver, login_user_via_localstorage):
+        with allure.step("Перейти в личный кабинет"):
+            main_page = MainPage(driver)
+            main_page.click_on_button_profile_page()
 
-        main_page = MainPage(driver)
-        main_page.click_on_button_profile_page()
-        profile_page = ProfilePage(driver)
-        profile_page.click_on_logout_button()
+        with allure.step("Выполнить выход из аккаунта"):
+            profile_page = ProfilePage(driver)
+            profile_page.click_on_logout_button()
 
-        driver.delete_all_cookies()
-        driver.execute_script("window.localStorage.clear();")
+        with allure.step("Очистить сессию (cookies + localStorage)"):
+            from pages.base_page import BasePage
+            base = BasePage(driver)
+            base.clear_browser_data()
 
-        driver.get(Config.LOGIN_URL)
+        with allure.step("Открыть страницу логина"):
+            login_page = LoginPage(driver)
+            login_page.open()
 
-        OVERLAY = (By.CSS_SELECTOR, "div.Modal_modal_overlay__")
-        try:
-            WebDriverWait(driver, Config.DEFAULT_TIMEOUT).until_not(
-                EC.presence_of_element_located(OVERLAY)
-            )
-        except TimeoutException:
-            pass
-
-        WebDriverWait(driver, Config.DEFAULT_TIMEOUT).until(
-            EC.visibility_of_element_located((By.XPATH, "//input[@name='name']"))
-        )
-
-        WebDriverWait(driver, Config.DEFAULT_TIMEOUT).until(
-            EC.visibility_of_element_located(LoginPageLocators.SUBMIT_BUTTON_LOGIN_TO_ACCOUNT)
-        )
+        with allure.step("Убедиться, что отображается форма логина"):
+            assert login_page.is_login_page_loaded(), "Форма логина не загружена"

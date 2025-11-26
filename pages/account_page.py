@@ -1,5 +1,4 @@
 import allure
-
 from locators import ProfilePageLocators
 from pages.base_page import BasePage
 from config import Config
@@ -12,22 +11,22 @@ class  ProfilePage(BasePage):
         self.url = Config.PROFILE_URL
         self.locators = ProfilePageLocators()
 
-    def open(self):
-        self.driver.get(self.url)
-
     @allure.step("Открытие страницы профиля")
     def open(self):
         super().open()
 
     @allure.step("Проверка текста на странице профиля")
     def is_profile_info_text_correct(self, expected_text):
-        try:
-            self.wait_visibility_of_element(self.locators.ACCOUNT_TEXT_IN_PROFILE)
-            actual_text = self.get_text_element(self.locators.ACCOUNT_TEXT_IN_PROFILE).strip()
-            return actual_text == expected_text
-        except Exception as e:
-            print(f"Ошибка при проверке текста профиля: {e}")
-            return False
+        self.wait_visibility_of_element(self.locators.ACCOUNT_TEXT_IN_PROFILE)
+        actual_text = self.get_text_element(self.locators.ACCOUNT_TEXT_IN_PROFILE).strip()
+
+        allure.attach(
+            f"Ожидалось: '{expected_text}'\nФактически: '{actual_text}'",
+            name="Сравнение текста профиля",
+            attachment_type=allure.attachment_type.TEXT
+        )
+
+        return actual_text == expected_text
 
     @allure.step("Клик по кнопке 'История заказов'")
     def click_on_history_order_button(self):
@@ -39,7 +38,12 @@ class  ProfilePage(BasePage):
         self.click_on_element(self.locators.BUTTON_LOGOUT_PROFILE)
 
     @allure.step("Получение номера последнего заказа в истории")
-    def get_latest_order_number(self):
+    def get_last_order_number_in_history_user(self):
         self.wait_visibility_of_element(self.locators.ALL_ORDERS_IN_HISTORY_USER)
-        order_numbers = self.get_texts_from_elements(self.locators.ALL_ORDERS_IN_HISTORY_USER)
-        return order_numbers[0] if order_numbers else None
+        numbers = self.get_texts_from_elements(self.locators.ALL_ORDERS_IN_HISTORY_USER)
+        number_last_order = numbers[0].lstrip('#0')
+        return number_last_order
+
+    @allure.step("Ожидание загрузки страницы профиля")
+    def wait_profile_page_loaded(self):
+        self.wait_visibility_of_element(self.locators.ACCOUNT_TEXT_IN_PROFILE)

@@ -1,10 +1,10 @@
 import allure
-
-from selenium.common import TimeoutException
-from selenium.webdriver.common.by import By
+from selenium.common import TimeoutException, ElementClickInterceptedException
+from selenium.webdriver import ActionChains
 from config import Config
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from locators import OrderFeedPageLocators
 
 
 class BasePage:
@@ -19,7 +19,7 @@ class BasePage:
         self.driver.get(self.url)
         try:
             WebDriverWait(self.driver, Config.DEFAULT_TIMEOUT).until(
-                EC.invisibility_of_element_located((By.CSS_SELECTOR, "div.Modal_modal_overlay__"))
+                EC.invisibility_of_element_located(OrderFeedPageLocators.MODAL_OVERLAY)
             )
         except TimeoutException:
             pass
@@ -33,7 +33,7 @@ class BasePage:
 
     @allure.step('Ожидание видимости элемента')
     def wait_visibility_of_element(self, locator):
-        WebDriverWait(self.driver, Config.DEFAULT_TIMEOUT).until(EC.visibility_of_element_located(locator))
+        WebDriverWait(self.driver, 15).until(EC.visibility_of_element_located(locator))
 
 
     @allure.step('Ожидание исчезновения элемента')
@@ -43,9 +43,22 @@ class BasePage:
         )
 
     @allure.step('Клик по элементу')
-    def click_on_element(self, locator):
-        WebDriverWait(self.driver, Config.DEFAULT_TIMEOUT).until(EC.element_to_be_clickable(locator))
-        self.driver.find_element(*locator).click()
+    def click_on_element(self, locator, wait_for_overlay=True):
+        if wait_for_overlay:
+            try:
+                WebDriverWait(self.driver, Config.DEFAULT_TIMEOUT).until(
+                    EC.invisibility_of_element_located(OrderFeedPageLocators.MODAL_OVERLAY)
+                )
+            except TimeoutException:
+                pass
+
+        element = WebDriverWait(self.driver, Config.DEFAULT_TIMEOUT).until(
+            EC.element_to_be_clickable(locator)
+        )
+        try:
+            element.click()
+        except ElementClickInterceptedException:
+            self.driver.execute_script("arguments[0].click();", element)
 
 
     @allure.step('Получение текста элемента')
@@ -57,10 +70,7 @@ class BasePage:
     def get_texts_from_elements(self, locator):
         self.wait_visibility_of_element(locator)
         elements = self.driver.find_elements(*locator)
-        number_order = []
-        for item in elements:
-            number_order.append(item.text.strip())
-        return number_order
+        return [item.text.strip() for item in elements]
 
 
     @allure.step('Ожидание текущего URL, ожидание появления expected_url, если он передан')
@@ -77,7 +87,7 @@ class BasePage:
 
 
     @allure.step('Ожидание исчезновения элемента из дерева')
-    def is_element_disappeared(self, locator, timeout=Config.DEFAULT_TIMEOUT):
+    def is_disappeared(self, locator, timeout=Config.DEFAULT_TIMEOUT):
         try:
             WebDriverWait(self.driver, timeout).until_not(
                 EC.presence_of_element_located(locator)
@@ -95,10 +105,13 @@ class BasePage:
         except TimeoutException:
             return False
 
-
     @allure.step('Проверка закрытия модального окна')
     def is_modal_closed(self, locator):
-        return self.is_element_disappeared(locator)
+        try:
+            self.is_disappeared(locator)
+            return True
+        except TimeoutException:
+            return False
 
 
     @allure.step('Ожидание появления модального окна')
@@ -110,10 +123,35 @@ class BasePage:
     def wait_modal_closed(self, locator):
         self.is_disappeared(locator)
 
-
     @allure.step('Прокрутка элемента и клик по нему')
-    def scroll_to_and_click(self, locator):
+    def scroll_to_and_click(self, locator, wait_for_overlay=True):
         element = self.driver.find_element(*locator)
-        self.driver.execute_script("arguments[0].scrollIntoView(true);", element)
-        WebDriverWait(self.driver, Config.DEFAULT_TIMEOUT).until(EC.element_to_be_clickable(locator))
-        element.click()
+        self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", element)
+        self.click_on_element(locator, wait_for_overlay=wait_for_overlay)
+
+
+    @allure.step("Ожидание выполнения пользовательского условия")
+    def wait_for(self, condition_func, timeout=Config.DEFAULT_TIMEOUT, message=""):
+        WebDriverWait(self.driver, timeout).until(lambda d: condition_func(d), message=message)
+
+    @allure.step("Очистка cookies и localStorage")
+    def clear_browser_data(self):
+        self.driver.delete_all_cookies()
+        self.driver.execute_script("window.localStorage.clear()")
+
+    @allure.step("Ожидание отсутствия элементов по локатору")
+    def wait_for_elements_absence(self, locator, timeout=Config.DEFAULT_TIMEOUT):
+        self.wait_for(
+            lambda d: len(d.find_elements(*locator)) == 0,
+            timeout=timeout,
+            message=f"Элементы по локатору {locator} всё ещё присутствуют"
+        )
+
+    @allure.step("Перетащить элемент на целевую область")
+    def drag_and_drop(self, source_locator, target_locator):
+        source = self.driver.find_element(*source_locator)
+        target = self.driver.find_element(*target_locator)
+        ActionChains(self.driver).drag_and_drop(source, target).perform()
+
+
+

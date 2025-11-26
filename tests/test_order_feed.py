@@ -24,12 +24,19 @@ class TestOrderFeedPage:
     @allure.title("Увеличение счётчика общего количества заказов после создания заказа")
     def test_total_orders_counter_increases(self, driver, login_user_via_localstorage):
         main_page = MainPage(driver)
-        main_page.click_on_feed_order_button()
         order_feed_page = OrderFeedPage(driver)
-        initial_count =  order_feed_page.get_total_orders_count()
+        main_page.click_on_feed_order_button()
+        order_feed_page.wait_feed_page_loaded()
+        initial_count = order_feed_page.get_total_orders_count()
+        main_page.open()
+        main_page.wait_main_page_loaded()
         main_page.create_order_on_main_and_return_to_feed()
+
+        # 3. Убедиться, что мы снова в ленте, и проверить финальное значение
+        order_feed_page.wait_feed_page_loaded()
         final_count = order_feed_page.get_total_orders_count()
-        assert final_count  > initial_count, "Счётчик заказов за всё время не увеличился"
+
+        assert final_count > initial_count, "Счётчик заказов за всё время не увеличился"
 
     @allure.title("Увеличение счётчика заказов за сегодня после создания заказа")
     def test_today_orders_counter_increases(self, driver, login_user_via_localstorage):

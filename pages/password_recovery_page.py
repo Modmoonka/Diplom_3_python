@@ -1,5 +1,4 @@
 import allure
-
 from pages.base_page import BasePage
 from config import Config
 from locators import ForgotPasswordPageLocators

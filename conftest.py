@@ -1,14 +1,8 @@
 import pytest
 import requests
-from selenium.common import TimeoutException
-
 from config import Config
-
-from helpers import generate_random_email, generate_random_string
+from data import Data
 from driver_factory import DriverFactory
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.by import By
 
 
 @pytest.fixture(params=["chrome", "firefox"])
@@ -21,45 +15,29 @@ def driver(request):
 
 
 @pytest.fixture()
-def create_user_and_delete():
-    email = generate_random_email(5)
-    password = generate_random_string(7)
-    name = generate_random_string(7)
-
-    payload = {"email": email, "password": password, "name": name}
+def register_new_user_and_return_credentials():
+    payload = Data.USER_CREDENTIALS
+    email = payload.get('email')
+    password = payload.get('password')
     response = requests.post(Config.REGISTER_URL, json=payload)
-    response_json = response.json()
-    token = response_json.get('accessToken')
-
-    yield email, password, token
-
-    if token:
-        headers = {'Authorization': f'Bearer {token}'}
-        requests.delete(Config.USER_DELETE, headers=headers)
+    if response.status_code == 200:
+        access_token = response.json()["accessToken"]
+        refresh_token = response.json()["refreshToken"]
+        yield email, password, access_token, refresh_token
+        headers = {"Authorization": access_token}
+        requests.delete(Config.USER_DATA_MANAGMENT_URL, headers=headers)
+    else:
+        pytest.fail(f"Не удалось зарегистрировать пользователя: {response.status_code}, {response.text}")
 
 
 @pytest.fixture()
-def login_user_via_localstorage(create_user_and_delete, driver):
-    email, password, access_token = create_user_and_delete
-    driver.get(Config.LOGIN_URL)
-    WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.XPATH, "//button[text()='Войти']"))
-    )
-
-    driver.execute_script(
-        "window.localStorage.setItem('accessToken', arguments[0]);",
-        access_token
-    )
-    driver.get(Config.MAIN_URL)
-    WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.XPATH, './/a[@href="/feed"]/p'))
-    )
-
-    try:
-        WebDriverWait(driver, 10).until(
-            EC.invisibility_of_element_located((By.CSS_SELECTOR, "div[class^='Modal_modal_overlay__']"))
-        )
-    except TimeoutException:
-        pass
-
+def login_user_via_localstorage(register_new_user_and_return_credentials, driver):
+    email, password, access_token, refresh_token = register_new_user_and_return_credentials
+    driver.get(Config.BASE_URL)
+    script_set_tokens = (
+        "window.localStorage.setItem('accessToken', '{}');"
+        "window.localStorage.setItem('refreshToken', '{}');"
+    ).format(access_token, refresh_token)
+    driver.execute_script(script_set_tokens)
+    driver.refresh()
     return email, password

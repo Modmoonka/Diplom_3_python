@@ -10,7 +10,7 @@ class MainPageLocators:
     # Заголовок формы конструктора "соберите бургер"
     CONSTRUCTOR_TITLE = (By.XPATH, ".//h1[text()='Соберите бургер']")
     # Локатор для булочки в конструкторе
-    INGREDIENT_IN_CONSTRUCTOR = (By.XPATH, '//a[@href="/ingredient/61c0c5a71d1f82001bdaaa6c"]')
+    INGREDIENT_IN_CONSTRUCTOR = (By.XPATH, "//p[text()='Краторная булка N-200i']/ancestor::a")
     # Каунтер
     BUN_COUNTER = (By.XPATH, "//p[contains(text(), 'Краторная булка N-200i')]/preceding-sibling::div[contains(@class, 'counter_')]/p")
     # Подпись с составом (белки, жиры...) в попапе булочки
@@ -21,6 +21,10 @@ class MainPageLocators:
     CLOSE_ORDER_MODAL = (By.XPATH, "//button[contains(@class, 'Modal_modal__close_modified')]")
     # Закрытие модального окна булки с деталями ингредиента
     BURGER_CONSTRUCTOR = (By.CSS_SELECTOR, '.BurgerConstructor_basket__29Cd7')
+    #BUN_IN_CONSTRUCTOR = (By.XPATH,"//div[@class='BurgerConstructor_basket__29Cd7']//p[text()='Краторная булка N-200i']")
+    BUN_IN_CONSTRUCTOR_TOP = (By.XPATH, "//section[contains(@class, 'BurgerConstructor_burger__')]//div[1]//p[text()='Краторная булка N-200i']")
+    # Булка в нижней части
+    BUN_IN_CONSTRUCTOR_BOTTOM = (By.XPATH, "//section[contains(@class, 'BurgerConstructor_burger__')]//div[last()]//p[text()='Краторная булка N-200i']")
     # Кнопка оформить заказ
     BUTTON_ORDER = (By.XPATH, "//button[text()='Оформить заказ']")
     # Уведомление о взятии заказа в модальном окне
@@ -32,12 +36,11 @@ class MainPageLocators:
     # Иконка с анимацией процесса заказа
     LOADING_ORDER_INDICATOR = (By.CSS_SELECTOR, '[alt="loading animation"]')
     # Модальное окно попапа на главной (общее для всех попапов)
-    MODAL_OPENED = (By.XPATH, "//section[contains(@class, 'Modal_modal_opened')]")
-    # Локатор для Оверлея
-    MODAL_OVERLAY_WHEN_ORDER_PROCESS = (By.CSS_SELECTOR, "div[class^='Modal_modal_overlay__']")
 
 
 class LoginPageLocators:
+    EMAIL_INPUT = (By.XPATH, "//input[@name='name']")
+    PASSWORD_INPUT = (By.XPATH, "//input[@name='password']")
     # Кнопка восстановить пароль
     FORGOT_PASSWORD_BUTTON = (By.CSS_SELECTOR, 'a[href="/forgot-password"]')
     # Кнопка входа в аккаунт на странице login
@@ -67,7 +70,9 @@ class OrderFeedPageLocators:
     # Первая карточка в ленте заказов
     FIRST_ORDER_CARD_IN_FEED = (By.XPATH, "//ul[contains(@class, 'OrderFeed_list')]/li[1]")
     # Модальное окно на странице заказов
-    ORDER_MODAL = (By.XPATH, "//section[contains(@class, 'Modal_modal_opened')]")
+    MODAL_OPENED = (By.XPATH, "//section[contains(@class, 'Modal_modal_opened')]")
+    # Модальное окно успешного заказа
+    ORDER_MODAL_WINDOW_WITHOUT_LOADER = (By.XPATH, "//div[@class='Modal_modal__P3_V5']")
     # Локатор для текста состава в модальном окне
     ORDER_TEXT_IN_ORDER_MODAL = (By.XPATH, "//p[text()= 'Cостав']")
     # Итого заказов
@@ -78,6 +83,8 @@ class OrderFeedPageLocators:
     ALL_ORDERS_IN_FEED = (By.XPATH, "//p[starts-with(text(),'#')]")
     # Заказы в работе
     ALL_ORDERS_IN_PROGRESS = (By.XPATH, "//ul[contains(@class, 'OrderFeed_orderListReady')]/li[contains(@class, 'digits')]")
+    # Локатор для Оверлея
+    MODAL_OVERLAY = (By.CSS_SELECTOR, "div[class^='Modal_modal_overlay__']")
 
 
 class ProfilePageLocators:
